@@ -2,6 +2,8 @@
 
 This is a repro example showing that Ember 3.5 + Ember Fetch 6.1.0 will throw errors during the build, when using a Monorepo.
 
+We suspect this is related to the use of Rollup within Ember-Fetch.
+
 ## Repro Steps
 - clone this repo
 - ensure you have `lerna` installed globally (`npm i -g lerna`)
