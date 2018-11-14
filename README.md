@@ -1,8 +1,8 @@
-# Ember-Fetch + Monorepo Bug
+# Ember-Cli 3.5 + Ember-Fetch 6.1.0 + Monorepo Bug
 
 This is a repro example showing that Ember 3.5 + Ember Fetch 6.1.0 will throw errors during the build, when using a Monorepo.
 
-We suspect this is related to the use of Rollup within Ember-Fetch.
+We suspect this is related to the use of Rollup within Ember-Fetch as the same error happens w Ember Fetch 5.1.2+ which is where the Rollup integration was added.
 
 ## Repro Steps
 - clone this repo
@@ -22,7 +22,7 @@ Built project successfully. Stored in "dist/".
 ```
 
 ### State 2: Ember-Fetch ^6.1.0
-- either `ember install ember-fetch` or switch to the `ember-fetch-installed` branch
+- either `ember install ember-fetch` or switch to the `ember-fetch-installed` branch and run `yarn bootstrap` in the root again.
 - run a build with `ember b`
 
 This will fail with a message like:
@@ -44,34 +44,12 @@ Stack Trace and Error Report: /var/folders/d8/rshjcmrd3_dcshnzs8f0hw7h0000gp/T/e
 
 [View the Stack Trace](stacktrace.md)
 
-## Other Info
-- we do not get this build error when using Ember-Fetch 5.1.1, which does not use Rollup.
-- In one of our apps, we use `ember-impagination`, which also installs `ember-browserify`. What is interesting is that when we install `ember-browserify` in this demo app, along with `ember-fetch@6.1.0`, we get build warnings, but the build *works*. The warning is below, but I *suspect* the reason the build works is that it's falling back to the `broccoli-builder`.
+### State 3: Use old Build Pipeline
+- with ember-fetch installed, run a build using the old build system - and it works.
 
 ```
-➜  ember-app git:(ember-fetch-installed) ✗ ember b
-WARNING: Invalid Broccoli2 node detected, falling back to broccoli-builder. Broccoli error:
----------------
-ember-browserify: The .read/.rebuild API is no longer supported as of Broccoli 1.0. Plugins must now derive from broccoli-plugin. https://github.com/broccolijs/broccoli/blob/master/docs/broccoli-1-0-plugin-api.md
-used as input node to BroccoliMergeTrees
--~- created here: -~-
-    at BroccoliMergeTrees.Plugin (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/broccoli-plugin/index.js:7:31)
-    at new BroccoliMergeTrees (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/ember-browserify/node_modules/broccoli-merge-trees/index.js:42:10)
-    at Class.postprocessTree (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/ember-browserify/lib/index.js:79:14)
-    at projectOrAddon.addons.reduce (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/ember-cli/lib/utilities/addon-process-tree.js:6:25)
-    at Array.reduce (<anonymous>)
-    at addonProcessTree (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/ember-cli/lib/utilities/addon-process-tree.js:4:32)
-    at callAddonsPostprocessTreeHook (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/ember-cli/lib/broccoli/default-packager.js:43:10)
-    at DefaultPackager.processJavascript (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/ember-cli/lib/broccoli/default-packager.js:530:41)
-    at DefaultPackager.processAppAndDependencies (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/ember-cli/lib/broccoli/default-packager.js:254:35)
-    at DefaultPackager.packageJavascript (/Users/dbouwman/dev/temp/env-bug/ember-fetch-monorepo-bug/node_modules/ember-cli/lib/broccoli/default-packager.js:1296:32)
--~- (end) -~----------------
-
+➜  ember-app git:(ember-fetch-installed) ✗ EMBER_CLI_BROCCOLI_2=false ember b
 Environment: development
-[API] Warning: The .read and .rebuild APIs will stop working in the next Broccoli version
-[API] Warning: Use broccoli-plugin instead: https://github.com/broccolijs/broccoli-plugin
-[API] Warning: Plugin uses .read/.rebuild API: ember-browserify
-[API] Warning: Plugin uses .read/.rebuild API: ember-browserify
 cleaning up...
 Built project successfully. Stored in "dist/".
 ```
